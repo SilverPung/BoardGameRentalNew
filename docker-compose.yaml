@@ -1,0 +1,28 @@
+services:
+  app:
+    image: 'docker-spring-boot-postgres:latest'
+    build:
+      context: .
+    container_name: BoardGameAppNew
+    depends_on:
+      - db
+    environment:
+      - POSTGRES_USER=$DB_USERNAME
+      - POSTGRES_PASSWORD=$DB_PASSWORD
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/$DB_NAME
+      - SPRING_DATASOURCE_USERNAME=$DB_USERNAME
+      - SPRING_DATASOURCE_PASSWORD=$DB_PASSWORD
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SECURITY_USER_NAME=$SECURITY_USER_NAME
+      - SECURITY_USER_PASSWORD=$SECURITY_USER_PASSWORD
+    ports:
+      - '8080:8080'
+  db:
+    image: 'postgres:latest'
+    container_name: BoardGameDBNew
+    environment:
+      - POSTGRES_USER=$DB_USERNAME
+      - POSTGRES_PASSWORD=$DB_PASSWORD
+      - POSTGRES_DB=$DB_NAME
+    ports:
+      - '5432:5432'
