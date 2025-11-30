@@ -1,6 +1,7 @@
 package dev.apibaras.boardgamerental.model.request;
 
 
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,11 +11,11 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class OverseerEventRequest {
+public class EventRequest {
 
-    private long overseerId;
-    private long eventId;
-    private String permissionsType;
+    @NotNull
+    private String name;
 
+    private String description;
 
 }

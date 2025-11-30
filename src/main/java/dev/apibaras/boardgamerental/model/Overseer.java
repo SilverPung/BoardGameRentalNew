@@ -37,15 +37,9 @@ public class Overseer implements UserDetails {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
-    @JsonIgnoreProperties("overseer")
-    @OneToMany(mappedBy = "overseer", cascade = CascadeType.REMOVE)
-    private Set<OverseerEvent> overseerEvents;
-
-
-
-
-
-
+    @JsonIgnoreProperties("overseers")
+    @ManyToMany(mappedBy = "overseers")
+    private Set<Event> events;
 
     public Overseer() {
     }

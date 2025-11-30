@@ -3,6 +3,7 @@ package dev.apibaras.boardgamerental.service;
 
 
 import dev.apibaras.boardgamerental.model.BoardGame;
+import dev.apibaras.boardgamerental.model.Event;
 import dev.apibaras.boardgamerental.model.request.BoardGameRequest;
 import dev.apibaras.boardgamerental.repository.BoardGameRepository;
 import dev.apibaras.boardgamerental.repository.EventRepository;
@@ -44,21 +45,14 @@ public class BoardGameService {
     }
 
 
-    public BoardGame save(BoardGameRequest boardGameRequest) {
-        BoardGame boardGame = new BoardGame();
-        boardGame.setEvent(eventRepository.getValidEventById(boardGameRequest.getEventId()));
+    public BoardGame save(Long EventId, BoardGame boardGame) {
 
-        boardGame.setData(boardGameRequest);
-
+        Event event = eventRepository.getValidEventById(EventId);
+        boardGame.setEvent(event);
 
         return boardGameRepository.save(boardGame);
     }
 
-    public BoardGame update(Long id, BoardGameRequest boardGameRequest) {
-        BoardGame boardGame = boardGameRepository.getValidBoardGameById(id);
-        boardGame.setEvent(eventRepository.getValidEventById(boardGameRequest.getEventId()));
-        return boardGameRepository.save(boardGame);
-    }
 
 }
 

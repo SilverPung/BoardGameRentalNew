@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 
@@ -31,17 +32,22 @@ public class Event {
     @NotNull
     private Date date;
 
-    @JsonIgnoreProperties("event")
-    @OneToMany(mappedBy = "event", cascade = CascadeType.REMOVE)
-    private Set<OverseerEvent> overseerEvents;
+    @JsonIgnoreProperties("events")
+    @ManyToMany
+    @JoinTable(
+            name = "event_overseer",
+            joinColumns = @JoinColumn(name = "event_id"),
+            inverseJoinColumns = @JoinColumn(name = "overseer_id")
+    )
+    private Set<Overseer> overseers = new HashSet<>();
 
     @JsonIgnoreProperties("event")
     @OneToMany(mappedBy = "event", cascade = CascadeType.REMOVE)
-    private Set<BoardGame> boardGames;
+    private Set<BoardGame> boardGames = new HashSet<>();
 
     @JsonIgnoreProperties("event")
     @OneToMany(mappedBy = "event", cascade = CascadeType.REMOVE)
-    private Set<Renter> renters;
+    private Set<Renter> renters = new HashSet<>();
 
 
     public Event(String name, String description, Date date) {
@@ -58,5 +64,11 @@ public class Event {
                 ", description='" + description + '\'' +
                 ", date=" + date +
                 '}';
+    }
+
+    public void addOverseer(Overseer overseer) {
+        if (overseer != null && !this.overseers.contains(overseer)) {
+            this.overseers.add(overseer);
+        }
     }
 }

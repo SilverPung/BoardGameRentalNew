@@ -68,7 +68,7 @@ public class BoardGame {
                 '}';
     }
 
-    public void setData(BoardGameRequest boardGameRequest) {
+    public BoardGame(BoardGameRequest boardGameRequest) {
         this.barcode = boardGameRequest.getBarcode();
         this.name = boardGameRequest.getName();
         this.description = boardGameRequest.getDescription();
@@ -76,6 +76,8 @@ public class BoardGame {
         this.quantity = boardGameRequest.getQuantity();
         this.quantityAvailable = boardGameRequest.getQuantityAvailable();
     }
+
+
 
 
 
