@@ -4,11 +4,13 @@ package dev.apibaras.boardgamerental.controller;
 import dev.apibaras.boardgamerental.model.event.Event;
 
 import dev.apibaras.boardgamerental.model.event.EventRequest;
+import dev.apibaras.boardgamerental.model.event.EventResponse;
 import dev.apibaras.boardgamerental.service.EventService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -34,27 +36,27 @@ public class EventController {
 
 
     @GetMapping("")
-    public ResponseEntity<List<Event>> getAllEvents() {
-        return ResponseEntity.ok(eventService.getAll(GetUsernameInfo()));
+    public ResponseEntity<Page<EventResponse>> getAllEvents(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+    ) {
+        return ResponseEntity.ok(eventService.getAll(GetUsernameInfo(), page, size));
     }
 
     @PostMapping("")
-    public ResponseEntity<Event> saveEvent(@RequestBody @Valid EventRequest eventRequest) {
+    public ResponseEntity<EventResponse> saveEvent(@RequestBody @Valid EventRequest eventRequest) {
 
         log.info("Saving event: {}", eventRequest);
         String username = GetUsernameInfo();
 
-        Event event = new Event();
-        event.setName(eventRequest.getName());
-        event.setDescription(eventRequest.getDescription());
-        event.setDate(new Date());
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(eventService.save(username,event));
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(eventService.save(username,eventRequest, null));
     }
 
     @PreAuthorize("@AuthenticationService.hasAccessToEvent(#eventId) or hasRole('ADMIN')")
     @GetMapping("/{eventId}")
-    public ResponseEntity<Event> getEventById(@PathVariable Long eventId) {
+    public ResponseEntity<EventResponse> getEventById(@PathVariable Long eventId) {
         return ResponseEntity.ok(eventService.getById(eventId));
     }
 
@@ -68,9 +70,9 @@ public class EventController {
 
     @PreAuthorize("@AuthenticationService.hasAccessToEvent(#eventId) or hasRole('ADMIN')")
     @PutMapping("/{eventId}")
-    public ResponseEntity<Event> updateEvent(@PathVariable Long eventId, @RequestBody Event event) { //TODO: change
-        event.setId(eventId);
-        return ResponseEntity.ok(eventService.save(null,event));
+    public ResponseEntity<EventResponse> updateEvent(@PathVariable Long eventId, @RequestBody EventRequest event) {
+
+        return ResponseEntity.ok(eventService.save(null,event, eventId));
     }
 
     private String GetUsernameInfo() {

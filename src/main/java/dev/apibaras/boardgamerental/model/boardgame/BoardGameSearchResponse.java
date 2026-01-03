@@ -12,6 +12,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class BoardGameSearchResponse {
 
+    public long boardGameId;
     public String name;
     public String image;
     public String thumbnail;
@@ -19,12 +20,15 @@ public class BoardGameSearchResponse {
     public int quantityAvailable;
 
     public BoardGameSearchResponse(BoardGame boardGame) {
+        this.boardGameId = boardGame.getId();
         this.name = boardGame.getName();
         this.image = boardGame.getImageUrl();
         this.thumbnail = boardGame.getThumbnailUrl();
         this.quantity = boardGame.getQuantity();
         this.quantityAvailable = boardGame.getQuantityAvailable();
     }
+
+
 
 
 }

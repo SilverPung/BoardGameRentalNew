@@ -43,10 +43,10 @@ public class AuthenticationController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<Overseer> register(@RequestBody RegisterOverseerDto registerUserDto) {
-        Overseer registeredUser = authenticationService.signup(registerUserDto);
+    public ResponseEntity<String> register(@RequestBody RegisterOverseerDto registerUserDto) {
+        authenticationService.signup(registerUserDto);
 
-        return ResponseEntity.ok(registeredUser);
+        return ResponseEntity.ok("User registered successfully");
     }
 
 
@@ -64,7 +64,6 @@ public class AuthenticationController {
     @PostMapping("/refresh")
     public ResponseEntity<String> refreshToken(HttpServletRequest request, HttpServletResponse response) {
         String refreshToken = extractTokenFromRequest(request, "REFRESH_TOKEN");
-        log.info("Refresh Token: {}", refreshToken);
         if (refreshToken == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No refresh token");
         }

@@ -5,6 +5,7 @@ import dev.apibaras.boardgamerental.model.logon.Overseer;
 import dev.apibaras.boardgamerental.model.logon.LoginOverseerDto;
 import dev.apibaras.boardgamerental.model.logon.RegisterOverseerDto;
 import dev.apibaras.boardgamerental.repository.OverseerRepository;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -29,13 +30,18 @@ public class AuthenticationService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public Overseer signup(RegisterOverseerDto input) {
+    public Void signup(RegisterOverseerDto input) {
         Overseer overseer = new Overseer();
         overseer.setUsername(input.getUsername());
         overseer.setPassword(passwordEncoder.encode(input.getPassword()));
         overseer.setEmail(input.getEmail());
-
-        return overseerRepository.save(overseer);
+        try{
+            overseerRepository.save(overseer);
+        }
+        catch ( DataIntegrityViolationException e ){
+            throw new RuntimeException("Username or email already exists");
+        }
+        return null;
     }
 
     public Overseer authenticate(LoginOverseerDto input) {

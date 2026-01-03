@@ -33,7 +33,9 @@ public class Event {
     private String name;
     private String description;
 
-    @NotNull
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(nullable = false, updatable = false)
     private Date date;
 
     @JsonIgnoreProperties("events")
@@ -58,10 +60,9 @@ public class Event {
     private Set<Rent> rents = new HashSet<>();
 
 
-    public Event(String name, String description, Date date) {
+    public Event(String name, String description) {
         this.name = name;
         this.description = description;
-        this.date = date;
     }
 
     @Override
@@ -77,6 +78,13 @@ public class Event {
     public void addOverseer(Overseer overseer) {
         if (overseer != null && !this.overseers.contains(overseer)) {
             this.overseers.add(overseer);
+        }
+    }
+
+    @PrePersist
+    private void onCreate() {
+        if (this.date == null) {
+            this.date = new Date();
         }
     }
 }

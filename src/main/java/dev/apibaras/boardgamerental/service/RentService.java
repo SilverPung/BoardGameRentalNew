@@ -2,6 +2,8 @@ package dev.apibaras.boardgamerental.service;
 
 
 
+import dev.apibaras.boardgamerental.model.boardgame.BoardGame;
+import dev.apibaras.boardgamerental.model.event.Event;
 import dev.apibaras.boardgamerental.model.rent.Rent;
 import dev.apibaras.boardgamerental.model.rent.Renter;
 import dev.apibaras.boardgamerental.model.rent.RentRequest;
@@ -55,7 +57,7 @@ public class RentService {
 
     public Page<RentResponse> getRentsForEvent(Long eventId, int page, int size) {
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by("id").descending());
-        Page<Rent> rentPage = rentRepository.findByEventId(eventId, pageRequest);
+        Page<Rent> rentPage = rentRepository.findByEventIdAndReturnedFalse(eventId, pageRequest);
         return rentPage.map(RentResponse::new);
 
     }
@@ -111,7 +113,13 @@ public class RentService {
         }
         Rent rent = new Rent();
         rent.setRenter(renter);
-        rent.setBoardGame(boardGameRepository.getValidBoardGameById(rentRequest.getBoardGameId()));
+        Optional<BoardGame> boardGameOpt = boardGameRepository.findByIdAndEventId(rentRequest.getBoardGameId(), eventId);
+        if(boardGameOpt.isEmpty()){
+            log.error("Board game not found with id: {} for eventId: {}", rentRequest.getBoardGameId(), eventId);
+            throw new EntityNotFoundException("Board game not found with id: " + rentRequest.getBoardGameId() + " for eventId: " + eventId);
+        }
+        rent.setBoardGame(boardGameOpt.get());
+        rent.setEvent(boardGameOpt.get().getEvent());
         rent.setReturned(false);
         Rent savedRent = rentRepository.save(rent);
         log.info("Board game rented successfully for renterId: {} and boardGameId: {}", renter.getId(), rentRequest.getBoardGameId());

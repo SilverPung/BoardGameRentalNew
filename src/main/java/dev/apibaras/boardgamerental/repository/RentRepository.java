@@ -23,5 +23,7 @@ public interface RentRepository extends JpaRepository<Rent, Long> {
 
     Page<Rent> findByEventId(Long eventId, Pageable pageable);
 
+    Page<Rent> findByEventIdAndReturnedFalse(Long eventId, Pageable pageable);
+
     Optional<Rent> findByIdAndEventId(Long rentId, Long eventId);
 }
