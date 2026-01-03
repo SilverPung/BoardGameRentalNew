@@ -1,4 +1,4 @@
-package dev.apibaras.boardgamerental.model.dto;
+package dev.apibaras.boardgamerental.model.logon;
 
 
 import lombok.AllArgsConstructor;
@@ -10,10 +10,9 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class LoginResponse {
-    private String token;
+public class LoginOverseerDto {
 
-    private long expiresIn;
-
+    private String username;
+    private String password;
 
 }

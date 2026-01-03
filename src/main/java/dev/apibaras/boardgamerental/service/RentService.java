@@ -2,65 +2,120 @@ package dev.apibaras.boardgamerental.service;
 
 
 
-import dev.apibaras.boardgamerental.model.Rent;
-import dev.apibaras.boardgamerental.model.dto.RentRequest;
+import dev.apibaras.boardgamerental.model.rent.Rent;
+import dev.apibaras.boardgamerental.model.rent.Renter;
+import dev.apibaras.boardgamerental.model.rent.RentRequest;
+import dev.apibaras.boardgamerental.model.rent.BoardGameRentedResponse;
+import dev.apibaras.boardgamerental.model.rent.RentResponse;
 import dev.apibaras.boardgamerental.repository.BoardGameRepository;
 import dev.apibaras.boardgamerental.repository.RentRepository;
 import dev.apibaras.boardgamerental.repository.RenterRepository;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
+
+@Slf4j
 @Service
 public class RentService {
 
     private final RentRepository rentRepository;
     private final BoardGameRepository boardGameRepository;
     private final RenterRepository renterRepository;
+    private final RenterService renterService;
+
 
     @Autowired
-    public RentService(RentRepository rentRepository, BoardGameRepository boardGameRepository, RenterRepository renterRepository){
+    public RentService(RentRepository rentRepository, BoardGameRepository boardGameRepository, RenterRepository renterRepository, RenterService renterService) {
         this.rentRepository = rentRepository;
         this.boardGameRepository = boardGameRepository;
         this.renterRepository = renterRepository;
+        this.renterService = renterService;
     }
 
-    public List<Rent> getAll() {
-        return rentRepository.findAll();
-    }
+   public BoardGameRentedResponse rentBoardGame(Long eventId, @NotNull RentRequest rentRequest){
 
-    public Rent getById(long id) {
-        return rentRepository.getValidRentById(id);
-    }
-
-    public Rent save(RentRequest rentRequest) {
-        Rent rent = new Rent();
-        return saveRent(rentRequest, rent);
-
-    }
-
-    private Rent saveRent(RentRequest rentRequest, Rent rent) {
-        rent.setData(rentRequest);
-        rent.setBoardGame(boardGameRepository.getValidBoardGameById(rentRequest.getBoardGameId()));
-        rent.setRenter(renterRepository.getValidRenterById(rentRequest.getRenterId()));
-        return rentRepository.save(rent);
-    }
-
-    public void deleteById(long id) {
-        if(!rentRepository.existsById(id)){
-            throw  new EntityNotFoundException("Rent with Id " + id + " not found");
+        if(rentRequest.isReturned()){
+            log.info("Processing return for eventId: {} , renterBarcode: {} , boardGameId: {}", eventId, rentRequest.getRenterBarcode(), rentRequest.getBoardGameId());
+            return handleRentReturn(eventId, rentRequest);
         }
-        rentRepository.deleteById(id);
+        log.info("Processing new rent for eventId: {} , renterBarcode: {} , boardGameId: {}", eventId, rentRequest.getRenterBarcode(), rentRequest.getBoardGameId());
+        return handleNewRent(eventId, rentRequest);
+   }
+
+
+
+    public Page<RentResponse> getRentsForEvent(Long eventId, int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by("id").descending());
+        Page<Rent> rentPage = rentRepository.findByEventId(eventId, pageRequest);
+        return rentPage.map(RentResponse::new);
+
     }
 
-    public Rent update(long id, RentRequest rentRequest) {
-        Rent rent = rentRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException("Rent with Id " + id + " not found")
+    public RentResponse getRentDetails(Long eventId, Long rentId) {
+        Optional<Rent> rentOpt = rentRepository.findByIdAndEventId(rentId, eventId);
+        if(rentOpt.isEmpty()){
+            log.error("Rent not found with id: {} for eventId: {}", rentId, eventId);
+            throw new EntityNotFoundException("Rent not found with id: " + rentId + " for eventId: " + eventId);
+        }
+        return new RentResponse(rentOpt.get());
+    }
 
-        );
-        return saveRent(rentRequest, rent);
+
+
+    // ---------------------- Private Helper Methods --------------------- //
+
+
+    private BoardGameRentedResponse handleRentReturn(Long eventId, RentRequest rentRequest){
+        Optional<Renter> renterOpt = renterRepository.findRenterByBarcode(rentRequest.getRenterBarcode());
+        if(renterOpt.isEmpty()){
+            log.error("Renter not found with barcode: {}", rentRequest.getRenterBarcode());
+            throw new EntityNotFoundException("Renter not found with barcode: " + rentRequest.getRenterBarcode());
+        }
+        Renter renter = renterOpt.get();
+
+        Optional<Rent> rent = rentRepository.findByRenterIdAndBoardGameIdAndEventId(renter.getId(), rentRequest.getBoardGameId(), eventId);
+        if(rent.isEmpty()){
+            log.error("Rent not found for renterId: {} and boardGameId: {}", renter.getId(), rentRequest.getBoardGameId());
+            throw new EntityNotFoundException("Rent not found for renterId: " + renter.getId() + " and boardGameId: " + rentRequest.getBoardGameId());
+        }
+        Rent existingRent = rent.get();
+        if (existingRent.isReturned()){
+            log.error("Board game already returned for renterId: {} and boardGameId: {}", renter.getId(), rentRequest.getBoardGameId());
+            throw new IllegalStateException("Board game already returned for renterId: " + renter.getId() + " and boardGameId: " + rentRequest.getBoardGameId());
+        }
+        existingRent.setReturned(true);
+        Rent updatedRent = rentRepository.save(existingRent);
+        log.info("Board game returned successfully for renterId: {} and boardGameId: {}", renter.getId(), rentRequest.getBoardGameId());
+        return new BoardGameRentedResponse(updatedRent);
+
+    }
+
+    private BoardGameRentedResponse handleNewRent(Long eventId, RentRequest rentRequest){
+        Optional<Renter> renterOpt = renterRepository.findRenterByBarcode(rentRequest.getRenterBarcode());
+        Renter renter;
+        if(renterOpt.isEmpty()){
+            log.info("Renter not found with id: {}, creating new renter.", rentRequest.getRenterBarcode());
+            renter = renterService.createRenterForEvent(eventId, rentRequest.getRenterBarcode());
+        }
+        else{
+            renter = renterOpt.get();
+        }
+        Rent rent = new Rent();
+        rent.setRenter(renter);
+        rent.setBoardGame(boardGameRepository.getValidBoardGameById(rentRequest.getBoardGameId()));
+        rent.setReturned(false);
+        Rent savedRent = rentRepository.save(rent);
+        log.info("Board game rented successfully for renterId: {} and boardGameId: {}", renter.getId(), rentRequest.getBoardGameId());
+        return new BoardGameRentedResponse(savedRent);
 
     }
 }

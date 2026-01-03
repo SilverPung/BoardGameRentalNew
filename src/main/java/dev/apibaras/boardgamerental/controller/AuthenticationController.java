@@ -1,8 +1,8 @@
 package dev.apibaras.boardgamerental.controller;
 
-import dev.apibaras.boardgamerental.model.Overseer;
-import dev.apibaras.boardgamerental.model.dto.LoginOverseerDto;
-import dev.apibaras.boardgamerental.model.dto.RegisterOverseerDto;
+import dev.apibaras.boardgamerental.model.logon.Overseer;
+import dev.apibaras.boardgamerental.model.logon.LoginOverseerDto;
+import dev.apibaras.boardgamerental.model.logon.RegisterOverseerDto;
 import dev.apibaras.boardgamerental.service.AuthenticationService;
 import dev.apibaras.boardgamerental.security.JwtService;
 import jakarta.servlet.http.Cookie;

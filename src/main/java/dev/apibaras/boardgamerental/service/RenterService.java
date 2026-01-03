@@ -2,15 +2,15 @@ package dev.apibaras.boardgamerental.service;
 
 
 
-import dev.apibaras.boardgamerental.model.Renter;
-import dev.apibaras.boardgamerental.model.dto.RenterRequest;
+
+import dev.apibaras.boardgamerental.exception.UniqueValueException;
+import dev.apibaras.boardgamerental.model.event.Event;
+import dev.apibaras.boardgamerental.model.rent.Renter;
 import dev.apibaras.boardgamerental.repository.EventRepository;
 import dev.apibaras.boardgamerental.repository.RenterRepository;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class RenterService {
@@ -26,32 +26,16 @@ public class RenterService {
     }
 
 
-    public List<Renter> getAll() {
-        return renterRepository.findAll();
-    }
-
-    public Renter getById(Long id) {
-        return renterRepository.getValidRenterById(id);
-    }
-
-    public Renter save(RenterRequest renterRequest) {
-        Renter renter = new Renter();
-        renter.setEvent(eventRepository.getValidEventById(renterRequest.getEventId()));
-        renter.setData(renterRequest);
-        return renterRepository.save(renter);
-    }
-
-    public void delete(Long id) {
-        if(!renterRepository.existsById(id)){
-            throw new EntityNotFoundException("Renter with id " + id + " not found");
+    public Renter createRenterForEvent(Long eventId, String renterBarcode){
+        Renter renter = new Renter(renterBarcode, "user-" + renterBarcode);
+        Event event = eventRepository.getValidEventById(eventId);
+        renter.setEvent(event);
+        try{
+            renterRepository.save(renter);
+        } catch (DataIntegrityViolationException e){
+            throw new UniqueValueException("Renter already exists with id: " + renterBarcode);
         }
-        renterRepository.deleteById(id);
-    }
+        return renter;
 
-    public Renter update(Long id, RenterRequest renterRequest) {
-        Renter renter = renterRepository.getValidRenterById(id);
-        renter.setEvent(eventRepository.getValidEventById(renterRequest.getEventId()));
-        renter.setData(renterRequest);
-        return renterRepository.save(renter);
     }
 }

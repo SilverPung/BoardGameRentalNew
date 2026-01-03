@@ -1,13 +1,16 @@
-package dev.apibaras.boardgamerental.model;
+package dev.apibaras.boardgamerental.model.rent;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import dev.apibaras.boardgamerental.model.dto.RentRequest;
+import dev.apibaras.boardgamerental.model.boardgame.BoardGame;
+import dev.apibaras.boardgamerental.model.event.Event;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.Date;
 
 @Entity
 @Getter
@@ -21,6 +24,10 @@ public class Rent {
 
     private boolean returned;
 
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(nullable = false, updatable = false)
+    private Date rentDate;
+
     @JsonIgnoreProperties("rents")
     @ManyToOne
     @JoinColumn(name = "renterId", nullable = false)
@@ -31,7 +38,20 @@ public class Rent {
     @JoinColumn(name = "boardGameId", nullable = false)
     private BoardGame boardGame;
 
+    @JsonIgnoreProperties("rents")
+    @ManyToOne
+    @JoinColumn(name = "eventId", nullable = false)
+    private Event event;
+
     public void setData(RentRequest rentRequest){
         this.returned = rentRequest.isReturned();
+    }
+
+
+    @PrePersist
+    private void onCreate() {
+        if (this.rentDate == null) {
+            this.rentDate = new Date();
+        }
     }
 }

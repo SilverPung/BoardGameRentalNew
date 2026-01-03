@@ -2,15 +2,13 @@ package dev.apibaras.boardgamerental.service;
 
 
 
-import dev.apibaras.boardgamerental.model.Event;
-import dev.apibaras.boardgamerental.model.Overseer;
+import dev.apibaras.boardgamerental.model.event.Event;
+import dev.apibaras.boardgamerental.model.logon.Overseer;
 import dev.apibaras.boardgamerental.repository.EventRepository;
 import dev.apibaras.boardgamerental.repository.OverseerRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

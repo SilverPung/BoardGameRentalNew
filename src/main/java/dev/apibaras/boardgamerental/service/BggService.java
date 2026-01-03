@@ -1,7 +1,7 @@
 package dev.apibaras.boardgamerental.service;
 
 
-import dev.apibaras.boardgamerental.model.dto.BoardGameSearchResponse;
+import dev.apibaras.boardgamerental.model.boardgame.BoardGameSearchResponse;
 import org.audux.bgg.BggClient;
 import org.audux.bgg.common.ThingType;
 import org.audux.bgg.response.*;

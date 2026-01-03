@@ -1,8 +1,9 @@
-package dev.apibaras.boardgamerental.model;
+package dev.apibaras.boardgamerental.model.logon;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import dev.apibaras.boardgamerental.model.event.Event;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;

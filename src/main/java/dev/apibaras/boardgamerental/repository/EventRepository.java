@@ -1,7 +1,7 @@
 package dev.apibaras.boardgamerental.repository;
 
 
-import dev.apibaras.boardgamerental.model.Event;
+import dev.apibaras.boardgamerental.model.event.Event;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

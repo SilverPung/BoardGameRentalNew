@@ -1,7 +1,6 @@
-package dev.apibaras.boardgamerental.model.dto;
+package dev.apibaras.boardgamerental.model.boardgame;
 
 
-import dev.apibaras.boardgamerental.model.BoardGame;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

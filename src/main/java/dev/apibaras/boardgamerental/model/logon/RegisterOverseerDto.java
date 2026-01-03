@@ -1,4 +1,4 @@
-package dev.apibaras.boardgamerental.model.dto;
+package dev.apibaras.boardgamerental.model.logon;
 
 
 import lombok.AllArgsConstructor;

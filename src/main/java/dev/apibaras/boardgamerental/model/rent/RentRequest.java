@@ -1,6 +1,7 @@
-package dev.apibaras.boardgamerental.model.dto;
+package dev.apibaras.boardgamerental.model.rent;
 
 
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,7 +13,13 @@ import lombok.Setter;
 @AllArgsConstructor
 public class RentRequest {
 
+
+    @NotNull
     boolean returned;
-    long renterId;
+
+    @NotNull
+    String renterBarcode;
+
+    @NotNull
     long boardGameId;
 }

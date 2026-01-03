@@ -1,7 +1,7 @@
 package dev.apibaras.boardgamerental.repository;
 
 
-import dev.apibaras.boardgamerental.model.Overseer;
+import dev.apibaras.boardgamerental.model.logon.Overseer;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

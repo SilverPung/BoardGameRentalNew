@@ -2,10 +2,8 @@ package dev.apibaras.boardgamerental.controller;
 
 
 
-import dev.apibaras.boardgamerental.model.BoardGame;
-import dev.apibaras.boardgamerental.model.dto.BoardGameRequest;
-import dev.apibaras.boardgamerental.model.dto.BoardGameSearchResponse;
-import dev.apibaras.boardgamerental.service.BggService;
+import dev.apibaras.boardgamerental.model.boardgame.BoardGame;
+import dev.apibaras.boardgamerental.model.boardgame.BoardGameRequest;
 import dev.apibaras.boardgamerental.service.BoardGameService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,7 +12,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/api/v1/event/{eventId}/boardgames")

@@ -1,9 +1,9 @@
 package dev.apibaras.boardgamerental.controller;
 
 
-import dev.apibaras.boardgamerental.model.Event;
+import dev.apibaras.boardgamerental.model.event.Event;
 
-import dev.apibaras.boardgamerental.model.dto.EventRequest;
+import dev.apibaras.boardgamerental.model.event.EventRequest;
 import dev.apibaras.boardgamerental.service.EventService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;

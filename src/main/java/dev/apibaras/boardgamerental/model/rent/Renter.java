@@ -1,8 +1,8 @@
-package dev.apibaras.boardgamerental.model;
+package dev.apibaras.boardgamerental.model.rent;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import dev.apibaras.boardgamerental.model.dto.RenterRequest;
+import dev.apibaras.boardgamerental.model.event.Event;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -22,6 +22,7 @@ public class Renter {
     private long id;
 
     @NotNull
+    @Column(name = "barcode", nullable = false, unique = true)
     private String barcode;
 
     @NotNull
@@ -49,10 +50,5 @@ public class Renter {
                 ", barcode='" + barcode + '\'' +
                 ", name='" + userName + '\'' +
                 '}';
-    }
-
-    public void setData(RenterRequest renterRequest) {
-        this.barcode = renterRequest.getBarcode();
-        this.userName = renterRequest.getUserName();
     }
 }

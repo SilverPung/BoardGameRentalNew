@@ -1,7 +1,11 @@
-package dev.apibaras.boardgamerental.model;
+package dev.apibaras.boardgamerental.model.event;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import dev.apibaras.boardgamerental.model.boardgame.BoardGame;
+import dev.apibaras.boardgamerental.model.logon.Overseer;
+import dev.apibaras.boardgamerental.model.rent.Rent;
+import dev.apibaras.boardgamerental.model.rent.Renter;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -48,6 +52,10 @@ public class Event {
     @JsonIgnoreProperties("event")
     @OneToMany(mappedBy = "event", cascade = CascadeType.REMOVE)
     private Set<Renter> renters = new HashSet<>();
+
+    @JsonIgnoreProperties("event")
+    @OneToMany(mappedBy = "event", cascade = CascadeType.REMOVE)
+    private Set<Rent> rents = new HashSet<>();
 
 
     public Event(String name, String description, Date date) {

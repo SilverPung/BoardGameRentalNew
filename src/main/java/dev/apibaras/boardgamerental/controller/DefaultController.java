@@ -1,9 +1,8 @@
 package dev.apibaras.boardgamerental.controller;
 
 
-import dev.apibaras.boardgamerental.model.dto.BoardGameSearchResponse;
+import dev.apibaras.boardgamerental.model.boardgame.BoardGameSearchResponse;
 import dev.apibaras.boardgamerental.service.BggService;
-import dev.apibaras.boardgamerental.service.BoardGameService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -1,4 +1,4 @@
-package dev.apibaras.boardgamerental.model.dto;
+package dev.apibaras.boardgamerental.model.boardgame;
 
 
 import jakarta.validation.constraints.NotNull;
