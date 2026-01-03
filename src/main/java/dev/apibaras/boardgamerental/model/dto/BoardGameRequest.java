@@ -1,8 +1,7 @@
-package dev.apibaras.boardgamerental.model.request;
+package dev.apibaras.boardgamerental.model.dto;
 
 
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,6 +24,9 @@ public class BoardGameRequest {
 
 
     String description;
+    String imageUrl;
+    String thumbnailUrl;
+    String publisher;
 
 
     String notes;

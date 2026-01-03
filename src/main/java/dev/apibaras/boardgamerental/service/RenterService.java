@@ -3,11 +3,10 @@ package dev.apibaras.boardgamerental.service;
 
 
 import dev.apibaras.boardgamerental.model.Renter;
-import dev.apibaras.boardgamerental.model.request.RenterRequest;
+import dev.apibaras.boardgamerental.model.dto.RenterRequest;
 import dev.apibaras.boardgamerental.repository.EventRepository;
 import dev.apibaras.boardgamerental.repository.RenterRepository;
 import jakarta.persistence.EntityNotFoundException;
-import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

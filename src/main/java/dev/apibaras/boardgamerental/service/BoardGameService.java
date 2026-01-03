@@ -4,7 +4,6 @@ package dev.apibaras.boardgamerental.service;
 
 import dev.apibaras.boardgamerental.model.BoardGame;
 import dev.apibaras.boardgamerental.model.Event;
-import dev.apibaras.boardgamerental.model.request.BoardGameRequest;
 import dev.apibaras.boardgamerental.repository.BoardGameRepository;
 import dev.apibaras.boardgamerental.repository.EventRepository;
 import jakarta.persistence.EntityNotFoundException;

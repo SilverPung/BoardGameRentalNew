@@ -1,4 +1,4 @@
-package dev.apibaras.boardgamerental.model.request;
+package dev.apibaras.boardgamerental.model.dto;
 
 
 import lombok.AllArgsConstructor;
@@ -10,9 +10,10 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class RentRequest {
+public class LoginResponse {
+    private String token;
 
-    boolean returned;
-    long renterId;
-    long boardGameId;
+    private long expiresIn;
+
+
 }

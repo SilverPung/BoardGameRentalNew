@@ -1,11 +1,10 @@
 package dev.apibaras.boardgamerental.controller;
 
 import dev.apibaras.boardgamerental.model.Overseer;
-import dev.apibaras.boardgamerental.model.request.LoginOverseerDto;
-import dev.apibaras.boardgamerental.model.request.RegisterOverseerDto;
+import dev.apibaras.boardgamerental.model.dto.LoginOverseerDto;
+import dev.apibaras.boardgamerental.model.dto.RegisterOverseerDto;
 import dev.apibaras.boardgamerental.service.AuthenticationService;
 import dev.apibaras.boardgamerental.security.JwtService;
-import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

@@ -2,8 +2,8 @@ package dev.apibaras.boardgamerental.service;
 
 
 import dev.apibaras.boardgamerental.model.Overseer;
-import dev.apibaras.boardgamerental.model.request.LoginOverseerDto;
-import dev.apibaras.boardgamerental.model.request.RegisterOverseerDto;
+import dev.apibaras.boardgamerental.model.dto.LoginOverseerDto;
+import dev.apibaras.boardgamerental.model.dto.RegisterOverseerDto;
 import dev.apibaras.boardgamerental.repository.OverseerRepository;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

@@ -1,4 +1,4 @@
-package dev.apibaras.boardgamerental.model.request;
+package dev.apibaras.boardgamerental.model.dto;
 
 
 import lombok.AllArgsConstructor;
@@ -6,13 +6,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class LoginOverseerDto {
+@Getter
+@Setter
+public class RegisterOverseerDto {
 
     private String username;
     private String password;
-
+    private String email;
 }

@@ -3,7 +3,7 @@ package dev.apibaras.boardgamerental.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import dev.apibaras.boardgamerental.model.request.RentRequest;
+import dev.apibaras.boardgamerental.model.dto.RentRequest;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -2,7 +2,7 @@ package dev.apibaras.boardgamerental.model;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import dev.apibaras.boardgamerental.model.request.BoardGameRequest;
+import dev.apibaras.boardgamerental.model.dto.BoardGameRequest;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -29,22 +29,19 @@ public class BoardGame {
     @NotNull
     private String name;
 
-    private String description;
-
     private String notes;
-
 
     private int quantity;
     private int quantityAvailable;
 
-    public BoardGame(String barcode, String name, String description, String notes, int quantity, int quantityAvailable) {
-        this.barcode = barcode;
-        this.name = name;
-        this.description = description;
-        this.notes = notes;
-        this.quantity = quantity;
-        this.quantityAvailable = quantityAvailable;
-    }
+    // bgg data
+    private String description;
+    private String imageUrl;
+    private String thumbnailUrl;
+    private String publisher;
+
+
+
 
     @JsonIgnoreProperties("boardGames")
     @ManyToOne
@@ -55,6 +52,19 @@ public class BoardGame {
     @JsonIgnoreProperties("boardGame")
     @OneToMany(mappedBy = "boardGame", cascade = CascadeType.REMOVE)
     private Set<Rent> rents;
+
+    public BoardGame(Event event, String publisher, String thumbnailUrl, String imageUrl, String description, int quantityAvailable, int quantity, String notes, String name, String barcode) {
+        this.event = event;
+        this.publisher = publisher;
+        this.thumbnailUrl = thumbnailUrl;
+        this.imageUrl = imageUrl;
+        this.description = description;
+        this.quantityAvailable = quantityAvailable;
+        this.quantity = quantity;
+        this.notes = notes;
+        this.name = name;
+        this.barcode = barcode;
+    }
 
     @Override
     public String toString() {
@@ -75,6 +85,10 @@ public class BoardGame {
         this.notes = boardGameRequest.getNotes();
         this.quantity = boardGameRequest.getQuantity();
         this.quantityAvailable = boardGameRequest.getQuantityAvailable();
+        this.imageUrl = boardGameRequest.getImageUrl();
+        this.thumbnailUrl = boardGameRequest.getThumbnailUrl();
+        this.publisher = boardGameRequest.getPublisher();
+
     }
 
 

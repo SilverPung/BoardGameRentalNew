@@ -3,7 +3,7 @@ package dev.apibaras.boardgamerental.service;
 
 
 import dev.apibaras.boardgamerental.model.Rent;
-import dev.apibaras.boardgamerental.model.request.RentRequest;
+import dev.apibaras.boardgamerental.model.dto.RentRequest;
 import dev.apibaras.boardgamerental.repository.BoardGameRepository;
 import dev.apibaras.boardgamerental.repository.RentRepository;
 import dev.apibaras.boardgamerental.repository.RenterRepository;

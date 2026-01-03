@@ -7,6 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import java.util.concurrent.ExecutionException;
+
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -20,5 +22,16 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleUniqueForeignKeyException(UniqueForeignKeyException e) {
 
         return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(InterruptedException.class)
+    public ResponseEntity<String> handleInterruptedException(InterruptedException e) {
+
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(ExecutionException.class)
+    public ResponseEntity<String> handleExecutionException(ExecutionException e) {
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
