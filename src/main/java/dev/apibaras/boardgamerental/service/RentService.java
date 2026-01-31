@@ -96,6 +96,11 @@ public class RentService {
         }
         existingRent.setReturned(true);
         Rent updatedRent = rentRepository.save(existingRent);
+        // Increase the available quantity
+        BoardGame boardGame = updatedRent.getBoardGame();
+        boardGame.setQuantityAvailable(boardGame.getQuantityAvailable() + 1);
+        boardGameRepository.save(boardGame);
+        log.info("Increased available quantity for boardGameId: {}. New quantityAvailable: {}", boardGame.getId(), boardGame.getQuantityAvailable());
         log.info("Board game returned successfully for renterId: {} and boardGameId: {}", renter.getId(), rentRequest.getBoardGameId());
         return new BoardGameRentedResponse(updatedRent);
 
@@ -118,8 +123,17 @@ public class RentService {
             log.error("Board game not found with id: {} for eventId: {}", rentRequest.getBoardGameId(), eventId);
             throw new EntityNotFoundException("Board game not found with id: " + rentRequest.getBoardGameId() + " for eventId: " + eventId);
         }
-        rent.setBoardGame(boardGameOpt.get());
-        rent.setEvent(boardGameOpt.get().getEvent());
+        BoardGame boardGame = boardGameOpt.get();
+        if (boardGame.getQuantityAvailable() <= 0){
+            log.error("Board game with id: {} is not available for rent.", rentRequest.getBoardGameId());
+            throw new IllegalStateException("Board game with id: " + rentRequest.getBoardGameId() + " is not available for rent.");
+        }
+        // Decrease the available quantity
+        boardGame.setQuantityAvailable(boardGame.getQuantityAvailable() - 1);
+        boardGameRepository.save(boardGame);
+        log.info("Decreased available quantity for boardGameId: {}. New quantityAvailable: {}", boardGame.getId(), boardGame.getQuantityAvailable());
+        rent.setBoardGame(boardGame);
+        rent.setEvent(boardGame.getEvent());
         rent.setReturned(false);
         Rent savedRent = rentRepository.save(rent);
         log.info("Board game rented successfully for renterId: {} and boardGameId: {}", renter.getId(), rentRequest.getBoardGameId());
