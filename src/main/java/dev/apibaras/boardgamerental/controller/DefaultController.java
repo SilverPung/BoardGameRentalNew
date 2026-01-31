@@ -1,6 +1,7 @@
 package dev.apibaras.boardgamerental.controller;
 
 
+import dev.apibaras.boardgamerental.model.boardgame.BggThingDto;
 import dev.apibaras.boardgamerental.model.boardgame.BoardGameSearchResponse;
 import dev.apibaras.boardgamerental.service.BggService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,5 +28,10 @@ public class DefaultController {
     @GetMapping("/search-bgg/{query}")
     public ResponseEntity<Set<BoardGameSearchResponse>> searchBgg(@PathVariable String query) {
         return ResponseEntity.ok(bggService.searchBoardGames(query));
+    }
+
+    @GetMapping("get-bgg-thing/{bggId}")
+    public ResponseEntity<BggThingDto> getBggThing(@PathVariable Long bggId) {
+        return ResponseEntity.ok(bggService.getThingById(bggId));
     }
 }
