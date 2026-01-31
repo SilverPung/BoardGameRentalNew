@@ -3,6 +3,7 @@ package dev.apibaras.boardgamerental.controller;
 import dev.apibaras.boardgamerental.model.rent.RentRequest;
 import dev.apibaras.boardgamerental.model.rent.BoardGameRentedResponse;
 import dev.apibaras.boardgamerental.model.rent.RentResponse;
+import dev.apibaras.boardgamerental.model.rent.ReturnRequest;
 import dev.apibaras.boardgamerental.service.RentService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +34,13 @@ public class RentController {
     @PutMapping("/{eventId}/rents")
     public ResponseEntity<BoardGameRentedResponse> rentBoardGame(@PathVariable Long eventId, @RequestBody @Valid RentRequest rentRequest) {
         return ResponseEntity.ok(rentService.rentBoardGame(eventId, rentRequest));
+
+    }
+
+    @PreAuthorize("@AuthenticationService.hasAccessToEvent(#eventId) or hasRole('ADMIN')")
+    @PutMapping("/{eventId}/returns")
+    public ResponseEntity<BoardGameRentedResponse> returnBoardGame(@PathVariable Long eventId, @RequestBody @Valid ReturnRequest returnRequest) {
+        return ResponseEntity.ok(rentService.returnBoardGame(eventId, returnRequest));
 
     }
 
