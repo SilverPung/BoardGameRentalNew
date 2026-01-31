@@ -27,6 +27,7 @@ public class BoardGameRequest {
     String imageUrl;
     String thumbnailUrl;
     String publisher;
+    boolean isTop30;
 
 
     String notes;

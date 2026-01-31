@@ -32,6 +32,8 @@ public class BoardGame {
 
     private String notes;
 
+    private boolean isTop30;
+
     private int quantity;
     private int quantityAvailable;
 
@@ -53,6 +55,10 @@ public class BoardGame {
     @JsonIgnoreProperties("boardGame")
     @OneToMany(mappedBy = "boardGame", cascade = CascadeType.REMOVE)
     private Set<Rent> rents;
+
+    @JsonIgnoreProperties("boardGame")
+    @OneToMany(mappedBy = "boardGame", cascade = CascadeType.REMOVE)
+    private Set<Rating> ratings;
 
     public BoardGame(Event event, String publisher, String thumbnailUrl, String imageUrl, String description, int quantityAvailable, int quantity, String notes, String name, String barcode) {
         this.event = event;
@@ -89,6 +95,7 @@ public class BoardGame {
         this.imageUrl = boardGameRequest.getImageUrl();
         this.thumbnailUrl = boardGameRequest.getThumbnailUrl();
         this.publisher = boardGameRequest.getPublisher();
+        this.isTop30 = boardGameRequest.isTop30();
 
     }
 

@@ -18,6 +18,7 @@ public class BoardGameSearchResponse {
     public String thumbnail;
     public int quantity;
     public int quantityAvailable;
+    public boolean isTop30;
 
     public BoardGameSearchResponse(BoardGame boardGame) {
         this.boardGameId = boardGame.getId();
@@ -26,6 +27,7 @@ public class BoardGameSearchResponse {
         this.thumbnail = boardGame.getThumbnailUrl();
         this.quantity = boardGame.getQuantity();
         this.quantityAvailable = boardGame.getQuantityAvailable();
+        this.isTop30 = boardGame.isTop30();
     }
 
 

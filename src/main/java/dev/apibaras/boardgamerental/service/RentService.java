@@ -3,15 +3,10 @@ package dev.apibaras.boardgamerental.service;
 
 
 import dev.apibaras.boardgamerental.model.boardgame.BoardGame;
+import dev.apibaras.boardgamerental.model.boardgame.Rating;
 import dev.apibaras.boardgamerental.model.event.Event;
-import dev.apibaras.boardgamerental.model.rent.Rent;
-import dev.apibaras.boardgamerental.model.rent.Renter;
-import dev.apibaras.boardgamerental.model.rent.RentRequest;
-import dev.apibaras.boardgamerental.model.rent.BoardGameRentedResponse;
-import dev.apibaras.boardgamerental.model.rent.RentResponse;
-import dev.apibaras.boardgamerental.repository.BoardGameRepository;
-import dev.apibaras.boardgamerental.repository.RentRepository;
-import dev.apibaras.boardgamerental.repository.RenterRepository;
+import dev.apibaras.boardgamerental.model.rent.*;
+import dev.apibaras.boardgamerental.repository.*;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
@@ -32,27 +27,29 @@ public class RentService {
     private final RentRepository rentRepository;
     private final BoardGameRepository boardGameRepository;
     private final RenterRepository renterRepository;
+    private final RatingRepository ratingRepository;
     private final RenterService renterService;
 
 
     @Autowired
-    public RentService(RentRepository rentRepository, BoardGameRepository boardGameRepository, RenterRepository renterRepository, RenterService renterService) {
+    public RentService(RentRepository rentRepository, BoardGameRepository boardGameRepository, RenterRepository renterRepository, RenterService renterService, RatingRepository ratingRepository) {
         this.rentRepository = rentRepository;
         this.boardGameRepository = boardGameRepository;
         this.renterRepository = renterRepository;
         this.renterService = renterService;
+        this.ratingRepository = ratingRepository;
     }
 
    public BoardGameRentedResponse rentBoardGame(Long eventId, @NotNull RentRequest rentRequest){
 
-        if(rentRequest.isReturned()){
-            log.info("Processing return for eventId: {} , renterBarcode: {} , boardGameId: {}", eventId, rentRequest.getRenterBarcode(), rentRequest.getBoardGameId());
-            return handleRentReturn(eventId, rentRequest);
-        }
         log.info("Processing new rent for eventId: {} , renterBarcode: {} , boardGameId: {}", eventId, rentRequest.getRenterBarcode(), rentRequest.getBoardGameId());
         return handleNewRent(eventId, rentRequest);
    }
 
+   public BoardGameRentedResponse returnBoardGame(Long eventId, @NotNull ReturnRequest returnRequest) {
+       log.info("Processing return for eventId: {} , renterBarcode: {} , boardGameId: {}", eventId, returnRequest.getRenterBarcode(), returnRequest.getBoardGameId());
+       return handleRentReturn(eventId, returnRequest);
+   }
 
 
     public Page<RentResponse> getRentsForEvent(Long eventId, int page, int size) {
@@ -74,34 +71,41 @@ public class RentService {
 
 
     // ---------------------- Private Helper Methods --------------------- //
-
-
-    private BoardGameRentedResponse handleRentReturn(Long eventId, RentRequest rentRequest){
-        Optional<Renter> renterOpt = renterRepository.findRenterByBarcode(rentRequest.getRenterBarcode());
+    private BoardGameRentedResponse handleRentReturn(Long eventId, ReturnRequest returnRequest){
+        Optional<Renter> renterOpt = renterRepository.findRenterByBarcode(returnRequest.getRenterBarcode());
         if(renterOpt.isEmpty()){
-            log.error("Renter not found with barcode: {}", rentRequest.getRenterBarcode());
-            throw new EntityNotFoundException("Renter not found with barcode: " + rentRequest.getRenterBarcode());
+            log.error("Renter not found with barcode: {}", returnRequest.getRenterBarcode());
+            throw new EntityNotFoundException("Renter not found with barcode: " + returnRequest.getRenterBarcode());
         }
         Renter renter = renterOpt.get();
 
-        Optional<Rent> rent = rentRepository.findByRenterIdAndBoardGameIdAndEventId(renter.getId(), rentRequest.getBoardGameId(), eventId);
+        Optional<Rent> rent = rentRepository.findByRenterIdAndBoardGameIdAndEventId(renter.getId(), returnRequest.getBoardGameId(), eventId);
         if(rent.isEmpty()){
-            log.error("Rent not found for renterId: {} and boardGameId: {}", renter.getId(), rentRequest.getBoardGameId());
-            throw new EntityNotFoundException("Rent not found for renterId: " + renter.getId() + " and boardGameId: " + rentRequest.getBoardGameId());
+            log.error("Rent not found for renterId: {} and boardGameId: {}", renter.getId(), returnRequest.getBoardGameId());
+            throw new EntityNotFoundException("Rent not found for renterId: " + renter.getId() + " and boardGameId: " + returnRequest.getBoardGameId());
         }
         Rent existingRent = rent.get();
         if (existingRent.isReturned()){
-            log.error("Board game already returned for renterId: {} and boardGameId: {}", renter.getId(), rentRequest.getBoardGameId());
-            throw new IllegalStateException("Board game already returned for renterId: " + renter.getId() + " and boardGameId: " + rentRequest.getBoardGameId());
+            log.error("Board game already returned for renterId: {} and boardGameId: {}", renter.getId(), returnRequest.getBoardGameId());
+            throw new IllegalStateException("Board game already returned for renterId: " + renter.getId() + " and boardGameId: " + returnRequest.getBoardGameId());
         }
-        existingRent.setReturned(true);
+        existingRent.returnGame();
         Rent updatedRent = rentRepository.save(existingRent);
         // Increase the available quantity
         BoardGame boardGame = updatedRent.getBoardGame();
         boardGame.setQuantityAvailable(boardGame.getQuantityAvailable() + 1);
         boardGameRepository.save(boardGame);
         log.info("Increased available quantity for boardGameId: {}. New quantityAvailable: {}", boardGame.getId(), boardGame.getQuantityAvailable());
-        log.info("Board game returned successfully for renterId: {} and boardGameId: {}", renter.getId(), rentRequest.getBoardGameId());
+
+        if(returnRequest.getRating() != null && returnRequest.getRating() >=1 && returnRequest.getRating() <= 10){
+            ratingRepository.save(new Rating(
+                    boardGame,
+                    returnRequest.getRating()
+            ));
+        }
+
+
+        log.info("Board game returned successfully for renterId: {} and boardGameId: {}", renter.getId(), returnRequest.getBoardGameId());
         return new BoardGameRentedResponse(updatedRent);
 
     }
@@ -134,7 +138,7 @@ public class RentService {
         log.info("Decreased available quantity for boardGameId: {}. New quantityAvailable: {}", boardGame.getId(), boardGame.getQuantityAvailable());
         rent.setBoardGame(boardGame);
         rent.setEvent(boardGame.getEvent());
-        rent.setReturned(false);
+        rent.rentGame();
         Rent savedRent = rentRepository.save(rent);
         log.info("Board game rented successfully for renterId: {} and boardGameId: {}", renter.getId(), rentRequest.getBoardGameId());
         return new BoardGameRentedResponse(savedRent);

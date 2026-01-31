@@ -43,8 +43,12 @@ public class Rent {
     @JoinColumn(name = "eventId", nullable = false)
     private Event event;
 
-    public void setData(RentRequest rentRequest){
-        this.returned = rentRequest.isReturned();
+    public void returnGame(){
+        this.returned = true;
+    }
+
+    public void rentGame(){
+        this.returned = false;
     }
 
 
